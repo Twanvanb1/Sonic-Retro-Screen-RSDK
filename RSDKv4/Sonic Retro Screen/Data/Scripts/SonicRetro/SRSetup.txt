@@ -1,0 +1,239 @@
+// ----------------------------------
+// RSDK Project: Sonic 2
+// Script Description: Sonic Retro Splash Screen Setup Object
+// Script Author: Twanvanb1
+// ----------------------------------
+
+// ========================
+// Aliases
+// ========================
+
+private alias object.value0 : object.timer
+private alias object.value1 : object.retroLogoXPos
+private alias object.value2 : object.retroLogoYPos
+private alias object.value3 : object.emeraldXPos
+private alias object.value4 : object.emeraldYPos
+private alias object.value5 : object.playerXPos
+private alias object.value6 : object.playerYPos
+private alias object.value7 : object.playerAnimationtimer
+
+// Sprite Aliases
+private alias 0 : SR_LOGO
+private alias 1 : EMERALD
+private alias 2 : SR_URL
+
+// States
+private alias 0  : SRLOGO_SETUP
+private alias 1  : SRLOGO_FADEIN
+private alias 2  : SRLOGO_SHOWEMBLEM
+private alias 3  : SRLOGO_ANIMATING
+private alias 4  : SRLOGO_FADEOUT
+
+// Tracks
+private alias 0 : TRACK_STAGE
+
+private alias 0 : PRIORITY_BOUNDS
+private alias 1 : PRIORITY_ACTIVE
+
+// ========================
+// Events
+// ========================
+
+event ObjectUpdate
+	object.animationTimer++
+	if object.animationTimer > 8
+		object.animationTimer = 0
+		object.frame++
+		object.frame &= 1
+	end if
+
+	if object.state >= SRLOGO_SHOWEMBLEM
+		CheckTouchRect(0, 0, screen.xsize, screen.ysize)
+		if checkResult > -1
+			object.state = SRLOGO_FADEOUT
+		end if
+
+		if keyPress[0].start == true
+			object.state = SRLOGO_FADEOUT
+		end if
+	end if
+
+	switch object.state
+	case SRLOGO_SETUP
+		if object.timer < 60
+			object.timer++
+		else
+			object.timer = 0
+			playMusic(0)
+			object.alpha = 0x100
+			object.state++
+		end if
+		break
+
+	case SRLOGO_FADEIN
+		if object.alpha > 0
+			object.alpha -= 8
+		else
+			object.state++
+		end if
+		break
+
+	case SRLOGO_SHOWEMBLEM
+		if object.timer < 810
+			object.timer++
+		else
+			object.timer = 0
+			object.state++
+		end if
+		break
+
+	case SRLOGO_ANIMATING
+		object.state++
+		break
+
+	case SRLOGO_FADEOUT
+		if object.alpha < 0xFF
+			object.alpha += 8
+		else
+			stage.activeList = PRESENTATION_STAGE
+			stage.listPos = 0
+			stopMusic(0)
+			LoadStage()
+		end if
+		break
+	end switch
+end event
+
+event ObjectDraw
+	object.retroLogoXPos = screen.xcenter
+	object.retroLogoXPos -= 27
+	object.retroLogoYPos = screen.ycenter
+
+	object.emeraldXPos = object.retroLogoXPos
+	object.emeraldXPos += 110
+	object.emeraldYPos = object.retroLogoYPos
+	object.emeraldYPos += 19
+
+	object.playerXPos = object.emeraldXPos
+	object.playerXPos += 34
+	object.playerYPos = object.emeraldYPos
+	object.playerYPos -= 36
+
+	switch object.state
+	case SRLOGO_SETUP
+		ClearScreen(160)
+		break
+	case SRLOGO_FADEIN
+		ClearScreen(1)
+		
+		DrawSpriteScreenXY(SR_LOGO, object.retroLogoXPos, object.retroLogoYPos)
+		
+		DrawSpriteScreenXY(EMERALD, object.emeraldXPos, object.emeraldYPos)
+
+		temp0 = screen.ysize
+		temp0 -= 12
+		DrawSpriteScreenXY(SR_URL, screen.xcenter, temp0)
+
+		temp0 = object.frame
+		temp0 += 3
+		DrawSpriteScreenXY(temp0, object.playerXPos, object.playerYPos)
+
+		DrawRect(0, 0, screen.xsize, screen.ysize, 0x00, 0x00, 0x00, object.alpha)
+		break
+
+	case SRLOGO_SHOWEMBLEM
+		DrawSpriteScreenXY(SR_LOGO, object.retroLogoXPos, object.retroLogoYPos)
+		
+		DrawSpriteScreenXY(EMERALD, object.emeraldXPos, object.emeraldYPos)
+
+		temp0 = screen.ysize
+		temp0 -= 12
+		DrawSpriteScreenXY(SR_URL, screen.xcenter, temp0)
+
+		temp0 = object.frame
+		temp0 += 3
+		DrawSpriteScreenXY(temp0, object.playerXPos, object.playerYPos)
+		break
+
+	case SRLOGO_ANIMATING
+		DrawSpriteScreenXY(SR_LOGO, object.retroLogoXPos, object.retroLogoYPos)
+		
+		DrawSpriteScreenXY(EMERALD, object.emeraldXPos, object.emeraldYPos)
+
+		temp0 = screen.ysize
+		temp0 -= 12
+		DrawSpriteScreenXY(SR_URL, screen.xcenter, temp0)
+
+		temp0 = object.frame
+		temp0 += 3
+		DrawSpriteScreenXY(temp0, object.playerXPos, object.playerYPos)
+		break
+
+	case SRLOGO_FADEOUT	
+		DrawSpriteScreenXY(SR_LOGO, object.retroLogoXPos, object.retroLogoYPos)
+		
+		DrawSpriteScreenXY(EMERALD, object.emeraldXPos, object.emeraldYPos)
+
+		temp0 = screen.ysize
+		temp0 -= 12
+		DrawSpriteScreenXY(SR_URL, screen.xcenter, temp0)
+
+		temp0 = object.frame
+		temp0 += 3
+		DrawSpriteScreenXY(temp0, object.playerXPos, object.playerYPos)
+
+		DrawRect(0, 0, screen.xsize, screen.ysize, 0x00, 0x00, 0x00, object.alpha)
+		break
+	end switch
+
+end event
+
+event ObjectStartup
+	SetMusicTrack("SonicRetroSplashScreen.ogg", TRACK_STAGE, true)
+
+	CopyPalette(0, 2, 0, 162, 4)
+
+	LoadSpriteSheet("Retro/Objects.gif")
+	SpriteFrame(-124, -40, 247, 80, 1, 1)	// #0 - Sonic Retro Logo
+	SpriteFrame(-77, -17, 154, 35, 1, 90)	// #1 - Emerald
+	SpriteFrame(-100, -4, 200, 7, 1, 82)	// #2 - Sonic Retro Url
+
+	switch stage.playerListPos
+	case 0
+		SpriteFrame(-12, -20, 23, 39, 156, 90)	// #3 - Sonic Finger Wag 1
+		SpriteFrame(-12, -20, 23, 39, 180, 90)	// #4 - Sonic Finger Wag 2
+		break
+	case 1
+		SpriteFrame(-18, -16, 36, 35, 204, 90)	// #3 - Tails 1
+		SpriteFrame(-18, -16, 36, 35, 204, 90)	// #4 - Tails 1 Dupe
+		break
+	case 2
+		SpriteFrame(-14, -21, 27, 40, 156, 130)	// #3 - Chukle 1
+		SpriteFrame(-14, -21, 27, 40, 184, 130)	// #4 - Chukle 2
+		break
+	end switch
+
+	object[SLOT_ZONESETUP].type = TypeName[Sonic Retro Setup]
+	object[SLOT_ZONESETUP].priority = PRIORITY_ACTIVE
+	//object[SLOT_ZONESETUP].drawOrder = 2
+
+	// Hide the touch controls
+	options.touchControls = false
+end event
+
+
+// ========================
+// Editor Events
+// ========================
+
+event RSDKDraw
+	DrawSprite(0)
+end event
+
+
+event RSDKLoad
+	LoadSpriteSheet("Global/Display.gif")
+	SpriteFrame(-16, -16, 32, 32, 1, 143)
+	
+	SetVariableAlias(ALIAS_VAR_PROPVAL, "unused")
+end event
