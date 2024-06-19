@@ -192,6 +192,8 @@ end event
 event ObjectStartup
 	SetMusicTrack("SonicRetroSplashScreen.ogg", TRACK_STAGE, true)
 
+	// this copies the player palette from the global palette to the stage palette
+	// this is to make it work on S1 aswell as S2
 	CopyPalette(0, 2, 0, 162, 4)
 
 	LoadSpriteSheet("Retro/Objects.gif")
@@ -216,7 +218,6 @@ event ObjectStartup
 
 	object[SLOT_ZONESETUP].type = TypeName[Sonic Retro Setup]
 	object[SLOT_ZONESETUP].priority = PRIORITY_ACTIVE
-	//object[SLOT_ZONESETUP].drawOrder = 2
 
 	// Hide the touch controls
 	options.touchControls = false
