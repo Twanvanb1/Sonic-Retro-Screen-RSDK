@@ -1,5 +1,5 @@
 // ----------------------------------
-// RSDK Project: Sonic 2
+// RSDK Project: Sonic Retro Splash Screen
 // Script Description: Sonic Retro Splash Screen Setup Object
 // Script Author: Twanvanb1
 // ----------------------------------
