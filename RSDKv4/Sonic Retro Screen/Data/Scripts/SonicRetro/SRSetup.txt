@@ -101,6 +101,7 @@ event ObjectUpdate
 			LoadStage()
 		end if
 		break
+
 	end switch
 end event
 
