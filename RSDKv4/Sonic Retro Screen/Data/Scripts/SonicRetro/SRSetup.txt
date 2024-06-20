@@ -15,7 +15,6 @@ private alias object.value3 : object.emeraldXPos
 private alias object.value4 : object.emeraldYPos
 private alias object.value5 : object.playerXPos
 private alias object.value6 : object.playerYPos
-private alias object.value7 : object.playerAnimationtimer
 
 // Sprite Aliases
 private alias 0 : SR_LOGO
@@ -48,10 +47,12 @@ event ObjectUpdate
 	end if
 
 	if object.state >= SRLOGO_SHOWEMBLEM
+#platform: MOBILE
 		CheckTouchRect(0, 0, screen.xsize, screen.ysize)
 		if checkResult > -1
 			object.state = SRLOGO_FADEOUT
 		end if
+#endplatform
 
 		if keyPress[0].start == true
 			object.state = SRLOGO_FADEOUT
@@ -125,51 +126,8 @@ event ObjectDraw
 		ClearScreen(160)
 		break
 	case SRLOGO_FADEIN
-		ClearScreen(1)
-		
-		DrawSpriteScreenXY(SR_LOGO, object.retroLogoXPos, object.retroLogoYPos)
-		
-		DrawSpriteScreenXY(EMERALD, object.emeraldXPos, object.emeraldYPos)
-
-		temp0 = screen.ysize
-		temp0 -= 12
-		DrawSpriteScreenXY(SR_URL, screen.xcenter, temp0)
-
-		temp0 = object.frame
-		temp0 += 3
-		DrawSpriteScreenXY(temp0, object.playerXPos, object.playerYPos)
-
-		DrawRect(0, 0, screen.xsize, screen.ysize, 0x00, 0x00, 0x00, object.alpha)
-		break
-
 	case SRLOGO_SHOWEMBLEM
-		DrawSpriteScreenXY(SR_LOGO, object.retroLogoXPos, object.retroLogoYPos)
-		
-		DrawSpriteScreenXY(EMERALD, object.emeraldXPos, object.emeraldYPos)
-
-		temp0 = screen.ysize
-		temp0 -= 12
-		DrawSpriteScreenXY(SR_URL, screen.xcenter, temp0)
-
-		temp0 = object.frame
-		temp0 += 3
-		DrawSpriteScreenXY(temp0, object.playerXPos, object.playerYPos)
-		break
-
 	case SRLOGO_ANIMATING
-		DrawSpriteScreenXY(SR_LOGO, object.retroLogoXPos, object.retroLogoYPos)
-		
-		DrawSpriteScreenXY(EMERALD, object.emeraldXPos, object.emeraldYPos)
-
-		temp0 = screen.ysize
-		temp0 -= 12
-		DrawSpriteScreenXY(SR_URL, screen.xcenter, temp0)
-
-		temp0 = object.frame
-		temp0 += 3
-		DrawSpriteScreenXY(temp0, object.playerXPos, object.playerYPos)
-		break
-
 	case SRLOGO_FADEOUT	
 		DrawSpriteScreenXY(SR_LOGO, object.retroLogoXPos, object.retroLogoYPos)
 		
